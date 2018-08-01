@@ -1,0 +1,15 @@
+package logs
+
+type DEBUGLEVEL int
+
+const (
+	DEBUG DEBUGLEVEL = 0
+	INFO  DEBUGLEVEL = 1
+	WARN  DEBUGLEVEL = 2
+	ERROR DEBUGLEVEL = 4
+	FATAL DEBUGLEVEL = 8
+)
+
+var DebugLevel DEBUGLEVEL
+
+var CallDepth = 2
