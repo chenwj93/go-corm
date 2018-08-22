@@ -30,39 +30,68 @@ func (t *Where) ToString() string {
 	return s
 }
 
-func (t *Where) Eq(key string, v interface{}) *Where {
-	t.where += " and " + key + " = ?"
-	t.paramWhere = append(t.paramWhere, v)
+// @param ifCheckNil 是否对v值判空， 无输入=false
+func (t *Where) Eq(key string, v interface{}, ifCheckNil ...bool) *Where {
+	if privateCheckParam(key, v, ifCheckNil) {
+		t.where += " and " + key + " = ?"
+		t.paramWhere = append(t.paramWhere, v)
+	}
 	return t
 }
 
-func (t *Where) Like(key string, v interface{}) *Where {
-	t.where += " and " + key + " like ?"
-	t.paramWhere = append(t.paramWhere, utils.Wrap(v, "%"))
+func (t *Where) Like(key string, v interface{}, ifCheckNil ...bool) *Where {
+	if privateCheckParam(key, v, ifCheckNil) {
+		t.where += " and " + key + " like ?"
+		t.paramWhere = append(t.paramWhere, utils.Wrap(v, "%"))
+	}
 	return t
 }
 
-func (t *Where) Gt(key string, v interface{}) *Where {
-	t.where += " and " + key + " > ?"
-	t.paramWhere = append(t.paramWhere, v)
+func (t *Where) LL(key string, v interface{}, ifCheckNil ...bool) *Where {
+	if privateCheckParam(key, v, ifCheckNil) {
+		t.where += " and " + key + " like ?"
+		t.paramWhere = append(t.paramWhere, "%" + utils.ParseString(v))
+	}
 	return t
 }
 
-func (t *Where) GtAndEq(key string, v interface{}) *Where {
-	t.where += " and " + key + " >= ?"
-	t.paramWhere = append(t.paramWhere, v)
+func (t *Where) RL(key string, v interface{}, ifCheckNil ...bool) *Where {
+	if privateCheckParam(key, v, ifCheckNil) {
+		t.where += " and " + key + " like ?"
+		t.paramWhere = append(t.paramWhere, utils.ParseString(v) + "%")
+	}
 	return t
 }
 
-func (t *Where) Lt(key string, v interface{}) *Where {
-	t.where += " and " + key + " < ?"
-	t.paramWhere = append(t.paramWhere, v)
+func (t *Where) Gt(key string, v interface{}, ifCheckNil ...bool) *Where {
+	if privateCheckParam(key, v, ifCheckNil) {
+		t.where += " and " + key + " > ?"
+		t.paramWhere = append(t.paramWhere, v)
+	}
 	return t
 }
 
-func (t *Where) LtAndEq(key string, v interface{}) *Where {
-	t.where += " and " + key + " <= ?"
-	t.paramWhere = append(t.paramWhere, v)
+func (t *Where) GtAndEq(key string, v interface{}, ifCheckNil ...bool) *Where {
+	if privateCheckParam(key, v, ifCheckNil) {
+		t.where += " and " + key + " >= ?"
+		t.paramWhere = append(t.paramWhere, v)
+	}
+	return t
+}
+
+func (t *Where) Lt(key string, v interface{}, ifCheckNil ...bool) *Where {
+	if privateCheckParam(key, v, ifCheckNil) {
+		t.where += " and " + key + " < ?"
+		t.paramWhere = append(t.paramWhere, v)
+	}
+	return t
+}
+
+func (t *Where) LtAndEq(key string, v interface{}, ifCheckNil ...bool) *Where {
+	if privateCheckParam(key, v, ifCheckNil) {
+		t.where += " and " + key + " <= ?"
+		t.paramWhere = append(t.paramWhere, v)
+	}
 	return t
 }
 
@@ -82,7 +111,13 @@ func (t *Where) In(col string, args ...interface{}) *Where {
 }
 
 func (t *Where) Custom(s string, v ...interface{}) *Where {
-	t.where += " " + s
-	t.paramWhere = append(t.paramWhere, v...)
+	if s != "" {
+		t.where += " " + s
+		t.paramWhere = append(t.paramWhere, v...)
+	}
 	return t
+}
+
+func privateCheckParam(key string, v interface{}, ifCheckNil []bool) bool {
+	return key != "" && (len(ifCheckNil) == 0 ||!ifCheckNil[0] ||!utils.IsEmpty(v))
 }

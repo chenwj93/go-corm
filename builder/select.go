@@ -4,19 +4,20 @@ import (
 	"strconv"
 	"utils"
 	"go-corm/logs"
+	"github.com/astaxie/beego/orm"
 )
 
 type SqlSelect struct {
-	table      string
-	slt        string
-	lmt        string
-	orderBy    string
-	groupBy    string
-	sqlRet     string
+	table   string
+	slt     string
+	lmt     string
+	orderBy string
+	groupBy string
+	sqlRet  string
 	Where
 }
 
-func NewSelect() *SqlSelect{
+func NewSelect() *SqlSelect {
 	return &SqlSelect{}
 }
 
@@ -52,9 +53,8 @@ func (t *SqlSelect) ToString() string {
 	return s
 }
 
-
-func (t *SqlSelect) Slt(col ...string) *SqlSelect{
-	if t.slt == utils.EMPTY_STRING{
+func (t *SqlSelect) Slt(col ...string) *SqlSelect {
+	if t.slt == utils.EMPTY_STRING {
 		t.slt = "select " + utils.ParseStringFromArray(col, utils.COMMA, "''")
 	} else {
 		t.slt += "," + utils.ParseStringFromArray(col, utils.COMMA, "''")
@@ -62,8 +62,10 @@ func (t *SqlSelect) Slt(col ...string) *SqlSelect{
 	return t
 }
 
-func (t *SqlSelect) Tb(table string) *SqlSelect{
-	t.table = " from " + table
+func (t *SqlSelect) Tb(table string) *SqlSelect {
+	if t.table == "" && table != ""{
+		t.table = " from " + table
+	}
 	return t
 }
 
@@ -96,3 +98,25 @@ func (t *SqlSelect) GroupBy(groupBy ...string) *SqlSelect {
 	return t
 }
 
+func (t *SqlSelect) QueryRows(o orm.Ormer, container interface{}) (int, error) {
+	value := struct {
+		value1 int
+	}{}
+	slt := t.slt
+	t.slt = ""
+	t.Slt("count(*) as value1")
+	e := o.Raw(t.GenCom().ToString(), t.GetParamWhere()...).QueryRow(&value)
+	if e != nil {
+		return 0, e
+	}
+	t.slt = slt
+	_, e = o.Raw(t.GenCom().GetGroupBy().GetOrderBy().GetLmt().ToString(), t.GetParamWhere()...).QueryRows(container)
+
+	return value.value1, e
+}
+
+func (t *SqlSelect) QueryRow(o orm.Ormer, container interface{}) (error) {
+	e := o.Raw(t.GenCom().ToString(), t.GetParamWhere()...).QueryRow(container)
+
+	return e
+}
