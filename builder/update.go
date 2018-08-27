@@ -9,7 +9,7 @@ import (
 type Update struct {
 	table string
 	cols  []string
-	args  [][]interface{}
+	args  []interface{}
 	Where
 }
 
@@ -33,7 +33,7 @@ func (o *Update) SetCols(cols ...string) *Update {
 
 func (o *Update) SetArgs(args ...interface{}) *Update {
 	if len(o.cols) != 0 && len(args) == len(o.cols) {
-		o.args = append(o.args, args)
+		o.args = append(o.args, args...)
 	}
 	return o
 }
@@ -44,8 +44,8 @@ func (o *Update) GenStat() string {
 	}
 	var stat strings.Builder
 
-	cols := strings.Join(o.cols, " = ?, ")
 	stat.WriteString(fmt.Sprintf("update %s set ", o.table))
+	cols := strings.Join(o.cols, " = ?, ")
 	stat.WriteString(cols)
 	stat.WriteString(" = ? ")
 	stat.WriteString(o.GetWhere().ToString())
@@ -53,9 +53,7 @@ func (o *Update) GenStat() string {
 }
 
 func (o *Update) GenArgs() (param []interface{}) {
-	for _, arg := range o.args {
-		param = append(param, arg...)
-	}
+	param = append(param, o.args...)
 	param = append(param, o.GetParamWhere()...)
 	return
 }
