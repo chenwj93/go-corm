@@ -16,7 +16,7 @@ func init() {
 	}
 
 	corm.RegisterStructs(true, "order_user", new(OrderUser))
-	corm.Debug(logs.DEBUG)
+	corm.Debug(logs.WARN)
 
 	//LogInit("log/log1")
 }
@@ -58,8 +58,27 @@ func TestQueryMap(t *testing.T)  {
 
 func TestExecInsert(t *testing.T)  {
 	exe := exec.NewOrm()
-	_, err := exe.Exec("insert into order_user (enc_order_user_id, enc_user_name)", "ididid", 2)
-	fmt.Println(err)
+	sqlcon := ` INSERT INTO card_no_pool (card_no, prefix, suffix, used)
+    VALUE
+      (
+        concat(
+          ?,
+          LPAD(?, 8, '0'),
+          ?
+        ),
+        ?,
+        ?,
+        0
+      ) ;`
+      now := time.Now()
+      exe.Begin()
+	for i := 20001; i < 30000; i++{
+		_, err := exe.Exec(sqlcon, 7788, i, 66, 7788, 66)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	fmt.Println(exe.Commit(), time.Now().Sub(now))
 }
 
 func TestExecUpdate(t *testing.T)  {
