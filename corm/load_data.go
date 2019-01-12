@@ -3,7 +3,7 @@ package corm
 import (
 	"database/sql"
 	"reflect"
-	"utils"
+	"github.com/chenwj93/utils"
 
 	"fmt"
 	"go-corm/errorHandle"

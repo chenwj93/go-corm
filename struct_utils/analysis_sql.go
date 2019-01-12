@@ -3,7 +3,7 @@ package struct_utils
 import (
 	"regexp"
 	"strings"
-	"utils"
+	"github.com/chenwj93/utils"
 	"fmt"
 )
 

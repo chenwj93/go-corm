@@ -2,7 +2,7 @@ package struct_utils
 
 import (
 	"reflect"
-	"utils"
+	"github.com/chenwj93/utils"
 	"encoding/json"
 )
 

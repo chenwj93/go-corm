@@ -1,6 +1,6 @@
-module github.com/chenwj93/go-corm
+module go-corm
 
 require (
+	github.com/chenwj93/utils v1.0.1
 	github.com/go-sql-driver/mysql v0.0.0-20170601062616-e3f0fdcf5277
-	github.com/satori/go.uuid v0.0.0-20170321230731-5bf94b69c6b6
 )

@@ -21,10 +21,11 @@ type Corm struct {
 
 func Register(dataSourceName string, maxOpenConns, maxIdleConns int, connMaxLifeTime int64) (err error) {
 	Orm.DB, err = sql.Open("mysql", dataSourceName)
-	Orm.ExecuteUnitMap, Orm.ExecuteUnitMapByTable = make(map[string]*ExecuteUnit), make(map[string]*ExecuteUnit)
 	if nil != err {
 		log.Printf("[corm]open database error: %s", err.Error())
 	}
+	Orm.ExecuteUnitMap, Orm.ExecuteUnitMapByTable = make(map[string]*ExecuteUnit), make(map[string]*ExecuteUnit)
+
 	err = Orm.DB.Ping()
 	if nil != err {
 		log.Println("[corm]connect database failed")

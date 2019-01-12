@@ -3,7 +3,7 @@ package builder
 import (
 	"strings"
 
-	"utils"
+	"github.com/chenwj93/utils"
 )
 
 type Where struct {

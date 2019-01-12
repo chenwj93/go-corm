@@ -3,7 +3,7 @@ package builder
 import (
 	"fmt"
 	"strings"
-	"utils"
+	"github.com/chenwj93/utils"
 )
 
 type Delete struct {
