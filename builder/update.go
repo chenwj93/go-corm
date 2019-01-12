@@ -1,7 +1,9 @@
 package builder
 
 import (
+	"database/sql"
 	"fmt"
+	"github.com/astaxie/beego/orm"
 	"strings"
 	"github.com/chenwj93/utils"
 )
@@ -56,4 +58,8 @@ func (o *Update) GenArgs() (param []interface{}) {
 	param = append(param, o.args...)
 	param = append(param, o.GetParamWhere()...)
 	return
+}
+
+func (o *Update) Exec(or orm.Ormer) (sql.Result, error) {
+	return or.Raw(o.GenStat(), o.GenArgs()...).Exec()
 }

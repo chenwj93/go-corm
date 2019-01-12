@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"github.com/astaxie/beego/orm"
 	"strconv"
 	"github.com/chenwj93/utils"
 	"go-corm/logs"
@@ -97,3 +98,29 @@ func (t *SqlSelect) GroupBy(groupBy ...string) *SqlSelect {
 	return t
 }
 
+
+func (t *SqlSelect) QueryRows(o orm.Ormer, container interface{}, needTotal ...bool) (total int, err error) {
+	if len(needTotal) > 0 && needTotal[0] {
+		value := struct {
+			Value1 int `orm:"column(value1)"`
+		}{}
+		slt := t.slt
+		t.slt = ""
+		t.Slt("count(*) as value1")
+		err = o.Raw(t.GenCom().ToString(), t.GetParamWhere()...).QueryRow(&value)
+		if err != nil {
+			return
+		}
+		total = value.Value1
+		t.slt = slt
+	}
+	_, err = o.Raw(t.GenCom().GetGroupBy().GetOrderBy().GetLmt().ToString(), t.GetParamWhere()...).QueryRows(container)
+
+	return
+}
+
+func (t *SqlSelect) QueryRow(o orm.Ormer, container interface{}) (error) {
+	e := o.Raw(t.GenCom().ToString(), t.GetParamWhere()...).QueryRow(container)
+
+	return e
+}
